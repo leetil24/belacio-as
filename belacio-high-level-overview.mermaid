@@ -1,0 +1,132 @@
+graph TB
+    Start([User Visits Landing Page]) --> EmailForm[Email Capture Form<br/>7 Fields + Consent]
+    
+    EmailForm --> GHL1[GHL Actions:<br/>✓ Create contact<br/>✓ Apply tags<br/>✓ Add to pipeline<br/>✓ Send welcome email]
+    
+    GHL1 --> Drip[7-Day Email Drip<br/>5 Emails Total]
+    
+    Drip --> D1[Day 1: Welcome]
+    Drip --> D2[Day 2: Reminder]
+    Drip --> D3[Day 3: Founder Invite]
+    Drip --> D4[Day 5: Social Proof]
+    Drip --> D5[Day 7: Final Urgency]
+    
+    D1 --> ExitDrip{App<br/>Complete?}
+    D2 --> ExitDrip
+    D3 --> ExitDrip
+    D4 --> ExitDrip
+    D5 --> ExitDrip
+    
+    ExitDrip -->|Yes| FullApp[Full Application<br/>Part 2]
+    ExitDrip -->|No| Nurture[30-Day Re-engagement]
+    
+    FullApp --> Review[Review<br/>3-5 Days]
+    
+    Review --> Approved{Approved?}
+    
+    Approved -->|No| Denied[Offer Freelancer]
+    Approved -->|Yes| TierAssign{Tier?}
+    
+    TierAssign -->|Freelancer| Tier1[Freelancer:<br/>✓ No credit<br/>✓ 100% upfront<br/>✓ 10% discount<br/>✓ Instant active]
+    
+    TierAssign -->|Salon Basic| Tier2[Salon Basic:<br/>✓ $1K credit → $2.5K<br/>✓ 50/50 → NET-30<br/>✓ 15% discount<br/>✓ $500 deposit]
+    
+    TierAssign -->|Salon Studio| Tier3[Salon Studio:<br/>✓ $1.2K credit → $5K<br/>✓ 50/50 → NET-30<br/>✓ 20% discount<br/>✓ $600 deposit]
+    
+    Tier1 --> ActiveFL[ACTIVE<br/>FREELANCER]
+    
+    Tier2 --> DepositReq[Deposit Required]
+    Tier3 --> DepositReq
+    
+    DepositReq --> DepositPaid{Paid?}
+    
+    DepositPaid -->|Yes| ActiveCredit[ACTIVE<br/>CREDIT ACCOUNT]
+    DepositPaid -->|No| DepositRemind[Reminders<br/>Days 3, 7, 10]
+    
+    DepositRemind --> DepositExp{Received?}
+    DepositExp -->|Yes| ActiveCredit
+    DepositExp -->|No| Expired[Application<br/>Expired]
+    
+    ActiveFL --> Monthly[MONTHLY ORDER CYCLE]
+    ActiveCredit --> Monthly
+    
+    Monthly --> OrderWindow[Order Window:<br/>Days 1-5 of Month]
+    
+    OrderWindow --> Alerts[Multi-Channel Alerts:<br/>✓ SMS<br/>✓ WhatsApp<br/>✓ Email]
+    
+    Alerts --> Reminders[Reminders:<br/>Day 3 & Day 5]
+    
+    Reminders --> OrderPlaced{Order?}
+    
+    OrderPlaced -->|No| NoOrder[No Order<br/>Log & Track]
+    OrderPlaced -->|Yes| ProcessOrd[Process Order:<br/>✓ Generate number<br/>✓ Calculate payment<br/>✓ Update credit<br/>✓ Send confirmation]
+    
+    NoOrder --> NextCycle[Next Month]
+    
+    ProcessOrd --> Ship[Ship on Day 7:<br/>✓ Generate tracking<br/>✓ Send notifications<br/>✓ 1-3 day delivery]
+    
+    Ship --> PayCycle[PAYMENT COLLECTION]
+    
+    PayCycle --> Day25[Day 25:<br/>Reminder<br/>5 days before due]
+    
+    Day25 --> Day30[Day 30:<br/>Payment Due<br/>Auto-charge attempt]
+    
+    Day30 --> PaidCheck1{Paid?}
+    
+    PaidCheck1 -->|Yes - On Time| Success[✓ Payment success<br/>✓ Credit restored<br/>✓ Perfect streak ++]
+    PaidCheck1 -->|No| Day31[Day 31:<br/>Late Payment<br/>$25 fee applied]
+    
+    Success --> Check12Mo{12 Months<br/>Perfect?}
+    
+    Check12Mo -->|Yes| Bonus[🎉 PERFECT BONUS:<br/>✓ $200 credit<br/>✓ +2% discount<br/>✓ VIP status]
+    Check12Mo -->|No| NextCycle
+    
+    Bonus --> NextCycle
+    
+    Day31 --> Day35[Day 35:<br/>Second Notice<br/>Personal call]
+    
+    Day35 --> PaidCheck2{Paid?}
+    
+    PaidCheck2 -->|Yes| LatePaid[Late payment<br/>processed<br/>Account active]
+    PaidCheck2 -->|No| Day45[Day 45:<br/>SUSPENSION<br/>Freeze account]
+    
+    LatePaid --> NextCycle
+    
+    Day45 --> Day60[Day 60:<br/>Final Check<br/>30 days overdue]
+    
+    Day60 --> PaidCheck3{Paid?}
+    
+    PaidCheck3 -->|Yes| Reactivate[Reactivate:<br/>Reduced credit<br/>Strict monitoring]
+    PaidCheck3 -->|No| Terminate[TERMINATE:<br/>Collections<br/>Credit report<br/>Blacklist]
+    
+    Reactivate --> NextCycle
+    
+    %% 90-DAY UPGRADE PATH
+    ActiveCredit -.->|After 90 Days| Check90[Check Eligibility:<br/>Perfect payment record?]
+    
+    Check90 -->|Yes| Upgrade[🎊 AUTO-UPGRADE:<br/>✓ Max credit limit<br/>✓ Full NET-30<br/>✓ Refund deposit<br/>✓ Gold Tier status]
+    Check90 -->|No| Continue[Continue<br/>Current Terms]
+    
+    Upgrade --> NextCycle
+    Continue --> Monthly
+    
+    %% REFERRAL SYSTEM
+    Monthly -.->|Referral Made| Referral[NEW REFERRAL:<br/>✓ $100 bonus<br/>✓ referral_count ++]
+    
+    Referral --> NextCycle
+    
+    NextCycle --> OrderWindow
+    
+    style Start fill:#e1f5ff
+    style EmailForm fill:#fff4e6
+    style Drip fill:#f3e5f5
+    style TierAssign fill:#e8f5e9
+    style ActiveFL fill:#a5d6a7
+    style ActiveCredit fill:#90caf9
+    style Monthly fill:#fff9c4
+    style Success fill:#c8e6c9
+    style Bonus fill:#ffd54f
+    style Upgrade fill:#aed581
+    style Day45 fill:#ff8a65
+    style Terminate fill:#e57373
+    style Referral fill:#81c784
