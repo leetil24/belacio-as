@@ -1,0 +1,187 @@
+graph TB
+    Start([Landing Page Visit]) --> EmailCapture[Email Capture Form]
+    
+    EmailCapture --> FormSubmit{Form Submitted?}
+    FormSubmit -->|Yes| CreateContact[Create/Update Contact in GHL]
+    FormSubmit -->|No| Exit1([User Exits])
+    
+    CreateContact --> ApplyTags[Apply Tags:<br/>- wholesale_lead<br/>- tier_xxx<br/>- location_xxx]
+    ApplyTags --> AddPipeline[Add to Pipeline:<br/>Wholesale Application<br/>Stage: Lead Captured]
+    AddPipeline --> SendWelcome[Send Welcome Email<br/>Wait 5 minutes]
+    SendWelcome --> StartDrip[Start 7-Day Drip Campaign]
+    
+    %% Drip Campaign Branch
+    StartDrip --> Day1[Day 1: Welcome + Next Steps]
+    Day1 --> AppComplete1{Application<br/>Completed?}
+    AppComplete1 -->|Yes| ExitDrip1[Exit Drip Sequence]
+    AppComplete1 -->|No| Day2Wait[Wait 48 Hours]
+    
+    Day2Wait --> Day2[Day 2: Application Reminder]
+    Day2 --> AppComplete2{Application<br/>Completed?}
+    AppComplete2 -->|Yes| ExitDrip2[Exit Drip Sequence]
+    AppComplete2 -->|No| Day3Wait[Wait 24 Hours]
+    
+    Day3Wait --> Day3[Day 3: Founder Program Invite]
+    Day3 --> FounderInterest{Founder<br/>Interest?}
+    FounderInterest -->|Yes| FounderTag[Add Tag: founder_interested<br/>Create Task for Natalia]
+    FounderInterest -->|No| Day5Wait[Wait 48 Hours]
+    FounderTag --> Day5Wait
+    
+    Day5Wait --> Day4[Day 5: Social Proof + Testimonial]
+    Day4 --> AppComplete4{Application<br/>Completed?}
+    AppComplete4 -->|Yes| ExitDrip4[Exit Drip Sequence]
+    AppComplete4 -->|No| Day7Wait[Wait 48 Hours]
+    
+    Day7Wait --> Day5[Day 7: Final Urgency]
+    Day5 --> AppComplete5{Application<br/>Completed?}
+    AppComplete5 -->|Yes| ExitDrip5[Exit Drip Sequence]
+    AppComplete5 -->|No| DripEnd[Sequence Completed<br/>Tag: drip_sequence_completed]
+    
+    DripEnd --> NoAction{Engaged?}
+    NoAction -->|High Engagement| ManualFollowup[Task: Manual Follow-up<br/>for Natalia]
+    NoAction -->|Low Engagement| ReEngagement[Add to 30-Day<br/>Re-engagement Campaign]
+    
+    %% Application Completion Branch
+    ExitDrip1 --> FullApp[Full Application Submitted<br/>Part 2 - Documents Upload]
+    ExitDrip2 --> FullApp
+    ExitDrip4 --> FullApp
+    ExitDrip5 --> FullApp
+    
+    FullApp --> AppReview[Application Review<br/>3-5 Business Days]
+    AppReview --> Approved{Approved?}
+    
+    Approved -->|Denied| DeniedEmail[Send Denial Email<br/>Offer Freelancer Tier]
+    Approved -->|Yes| TierCheck{Which Tier?}
+    
+    %% Tier Assignment
+    TierCheck -->|Freelancer| FreelancerSetup[Setup:<br/>- credit_limit = 0<br/>- payment_terms = Upfront<br/>- base_discount = 10%<br/>- No deposit needed]
+    TierCheck -->|Salon Basic| BasicSetup[Setup:<br/>- credit_limit = $1,000<br/>- payment_terms = 50/50<br/>- base_discount = 15%<br/>- deposit = $500]
+    TierCheck -->|Salon Studio| StudioSetup[Setup:<br/>- credit_limit = $1,200<br/>- payment_terms = 50/50<br/>- base_discount = 20%<br/>- deposit = $600]
+    
+    FreelancerSetup --> FreelancerActive[Account Status: Active<br/>Send Activation Email<br/>Grant Portal Access]
+    FreelancerActive --> MonthlyOrders[Monthly Order Cycle]
+    
+    BasicSetup --> DepositRequest[Send Approval Email<br/>Request Security Deposit]
+    StudioSetup --> DepositRequest
+    
+    DepositRequest --> DepositPaid{Deposit<br/>Received?}
+    DepositPaid -->|No| DepositReminder[Reminder in 3 Days]
+    DepositReminder --> DepositCheck{Received?}
+    DepositCheck -->|No| DepositReminder2[Final Reminder in 7 Days]
+    DepositCheck -->|Yes| ActivateAccount
+    DepositReminder2 --> DepositExpire{Received?}
+    DepositExpire -->|No| ExpireApp[Application Expires]
+    DepositExpire -->|Yes| ActivateAccount
+    
+    DepositPaid -->|Yes| ActivateAccount[Update Fields:<br/>- account_status = Active<br/>- account_start_date = Today<br/>- security_deposit_paid = Yes]
+    
+    ActivateAccount --> SendActivation[Send Account Activation Email<br/>Portal Credentials<br/>SMS + WhatsApp Welcome]
+    SendActivation --> MonthlyOrders
+    
+    %% Monthly Order Cycle
+    MonthlyOrders --> Day90Check{90 Days<br/>Complete?}
+    Day90Check -->|No| OrderWindow1[1st of Month:<br/>Order Window Opens]
+    Day90Check -->|Yes| CreditUpgrade
+    
+    OrderWindow1 --> SendAlerts[Send Multi-Channel Alerts:<br/>- SMS<br/>- WhatsApp<br/>- Email]
+    SendAlerts --> Day3Check[Day 3: Mid-Window Check]
+    Day3Check --> OrderPlaced1{Order<br/>Placed?}
+    OrderPlaced1 -->|Yes| ProcessOrder[Process Order]
+    OrderPlaced1 -->|No| Day3Reminder[Send Reminder]
+    
+    Day3Reminder --> Day5Check[Day 5: Final Deadline]
+    Day5Check --> OrderPlaced2{Order<br/>Placed?}
+    OrderPlaced2 -->|Yes| ProcessOrder
+    OrderPlaced2 -->|No| NoOrder[No Order This Month<br/>Log Activity]
+    
+    ProcessOrder --> GenerateOrderNum[Generate Order Number<br/>BEL-2025-###]
+    GenerateOrderNum --> CalcPayment{Payment<br/>Terms?}
+    
+    CalcPayment -->|50/50| Split5050[deposit_amount = 50%<br/>balance_due = 50%]
+    CalcPayment -->|NET30| FullNet30[deposit_amount = 0<br/>balance_due = 100%]
+    CalcPayment -->|Upfront| FullUpfront[deposit_amount = 100%<br/>balance_due = 0]
+    
+    Split5050 --> UpdateCredit[Update Contact:<br/>- outstanding_balance += balance<br/>- credit_available recalculated]
+    FullNet30 --> UpdateCredit
+    FullUpfront --> UpdateCredit
+    
+    UpdateCredit --> SetDates[Set Dates:<br/>- order_date = Today<br/>- shipment_date = 7th<br/>- payment_due_date = shipment + 30]
+    SetDates --> SendConfirm[Send Order Confirmation Email]
+    SendConfirm --> ShipDay[Day 7: Shipment]
+    
+    ShipDay --> UpdateTracking[Update:<br/>- tracking_number<br/>- order_status = Shipped]
+    UpdateTracking --> SendTracking[Send Tracking Email]
+    SendTracking --> DeliveryWindow[1-3 Day Delivery]
+    
+    DeliveryWindow --> PaymentCycle[Payment Collection Cycle]
+    
+    %% Payment Collection
+    PaymentCycle --> Day25[Day 25: Payment Reminder<br/>5 Days Before Due]
+    Day25 --> Send25Reminder[Send Reminder Email]
+    Send25Reminder --> Day30[Day 30: Payment Due Date]
+    
+    Day30 --> AutoCharge{Auto-Charge<br/>Card on File?}
+    AutoCharge -->|Success| PaymentSuccess[Update:<br/>- payment_status = Paid<br/>- consecutive_on_time += 1<br/>- credit_available restored]
+    AutoCharge -->|Failed/No Card| ManualPayment[Send Payment Due Email]
+    
+    PaymentSuccess --> PerfectStreak{12 Months<br/>Perfect?}
+    PerfectStreak -->|Yes| PerfectBonus[Perfect Payment Bonus]
+    PerfectStreak -->|No| NextMonth[Next Monthly Cycle]
+    
+    ManualPayment --> Day31Check[Day 31: Check Payment]
+    Day31Check --> Paid31{Paid?}
+    Paid31 -->|Yes| LateButPaid[Update:<br/>- payment_status = Paid<br/>- late_payment_count += 1<br/>- consecutive_on_time = 0]
+    Paid31 -->|No| ApplyLateFee[Day 31: Late Payment<br/>- Apply $25 late fee<br/>- Send late notice]
+    
+    LateButPaid --> NextMonth
+    
+    ApplyLateFee --> Day45Check[Day 45: Suspension Check]
+    Day45Check --> Paid45{Paid?}
+    Paid45 -->|Yes| LatePaid[Payment Received<br/>Account Remains Active]
+    Paid45 -->|No| Suspend[Account Suspension:<br/>- account_status = Suspended<br/>- credit_available = 0<br/>- Freeze ordering]
+    
+    LatePaid --> NextMonth
+    
+    Suspend --> Day60Check[Day 60: Final Check]
+    Day60Check --> Paid60{Paid?}
+    Paid60 -->|Yes| Reactivate[Reactivate Account<br/>Restore Credit]
+    Paid60 -->|No| Delinquent[Account Delinquent:<br/>- Report to credit bureaus<br/>- Send legal notice<br/>- Terminate account]
+    
+    Reactivate --> NextMonth
+    
+    %% Credit Upgrade (90 Days)
+    CreditUpgrade --> Check90{Requirements<br/>Met?}
+    Check90 -->|late_payment_count > 0| NoUpgrade[Continue Current Terms]
+    Check90 -->|Perfect Record| UpgradeCredit[Upgrade Account:<br/>- credit_limit = credit_limit_max<br/>- payment_terms = NET30<br/>- Refund security deposit]
+    
+    NoUpgrade --> OrderWindow1
+    
+    UpgradeCredit --> UpdateUpgrade[Update Fields:<br/>- account_tier_upgrade_date<br/>- vip_status = Yes<br/>- Add tags]
+    UpdateUpgrade --> RefundDeposit[Process Deposit Refund:<br/>Add to account credit or<br/>Refund to original payment]
+    RefundDeposit --> SendUpgradeEmail[Send Upgrade Email:<br/>Congratulations + New Terms]
+    SendUpgradeEmail --> NextMonth
+    
+    %% Rewards
+    PerfectBonus --> AddBonus[Add Rewards:<br/>- $200 account credit<br/>- +2% permanent discount<br/>- vip_status = Yes]
+    AddBonus --> SendBonusEmail[Send Celebration Email]
+    SendBonusEmail --> NextMonth
+    
+    NextMonth --> OrderWindow1
+    NoOrder --> NextMonth
+    
+    %% Referral Bonus
+    MonthlyOrders -.->|Referral Made| ReferralTrigger[New Contact Approved<br/>with referred_by field]
+    ReferralTrigger --> AddReferralBonus[Add $100 Credit to Referrer<br/>referral_count += 1]
+    AddReferralBonus --> SendReferralEmails[Send Confirmation to Referrer<br/>Send Welcome to New Signup]
+    
+    style Start fill:#e1f5ff
+    style EmailCapture fill:#fff4e6
+    style CreateContact fill:#e8f5e9
+    style MonthlyOrders fill:#f3e5f5
+    style PaymentSuccess fill:#c8e6c9
+    style ApplyLateFee fill:#ffcdd2
+    style Suspend fill:#ef5350
+    style Delinquent fill:#c62828
+    style CreditUpgrade fill:#fff9c4
+    style PerfectBonus fill:#ffd54f
+    style UpgradeCredit fill:#aed581
