@@ -1,8 +1,8 @@
 <iframe
     src="https://api.leadconnectorhq.com/widget/form/p1YFu6D4sdK06la3v9jg"
-    style="display:none;width:100%;height:100%;border:none;border-radius:3px"
-    id="popup-p1YFu6D4sdK06la3v9jg" 
-    data-layout="{'id':'POPUP'}"
+    style="width:100%;height:100%;border:none;border-radius:3px"
+    id="inline-p1YFu6D4sdK06la3v9jg" 
+    data-layout="{'id':'INLINE'}"
     data-trigger-type="alwaysShow"
     data-trigger-value=""
     data-activation-type="alwaysActivated"
@@ -10,8 +10,8 @@
     data-deactivation-type="neverDeactivate"
     data-deactivation-value=""
     data-form-name="Popup First-Time 10% Discount"
-    data-height="340"
-    data-layout-iframe-id="popup-p1YFu6D4sdK06la3v9jg"
+    data-height="402"
+    data-layout-iframe-id="inline-p1YFu6D4sdK06la3v9jg"
     data-form-id="p1YFu6D4sdK06la3v9jg"
     title="Popup First-Time 10% Discount"
         >
