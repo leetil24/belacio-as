@@ -1,8 +1,8 @@
 <iframe
     src="https://api.leadconnectorhq.com/widget/form/MhWhZpRpEuNrn7CoP5Ou"
-    style="display:none;width:100%;height:100%;border:none;border-radius:3px"
-    id="popup-MhWhZpRpEuNrn7CoP5Ou" 
-    data-layout="{'id':'POPUP'}"
+    style="width:100%;height:100%;border:none;border-radius:3px"
+    id="inline-MhWhZpRpEuNrn7CoP5Ou" 
+    data-layout="{'id':'INLINE'}"
     data-trigger-type="alwaysShow"
     data-trigger-value=""
     data-activation-type="alwaysActivated"
@@ -10,8 +10,8 @@
     data-deactivation-type="neverDeactivate"
     data-deactivation-value=""
     data-form-name="Popup Wholesale Salon Lead Capture"
-    data-height="397"
-    data-layout-iframe-id="popup-MhWhZpRpEuNrn7CoP5Ou"
+    data-height="402"
+    data-layout-iframe-id="inline-MhWhZpRpEuNrn7CoP5Ou"
     data-form-id="MhWhZpRpEuNrn7CoP5Ou"
     title="Popup Wholesale Salon Lead Capture"
         >
